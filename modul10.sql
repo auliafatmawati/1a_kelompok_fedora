@@ -51,7 +51,7 @@ SHOW TABLES;
 SHOW CREATE TABLE balita;
 SHOW CREATE TABLE jadwal_posyandu;
 SHOW CREATE TABLE kunjungan;
-
+ 4. MENGISI DATA AWAL
 -- Mengisi Data Awal
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
@@ -237,9 +237,47 @@ UNION ALL SELECT 'jadwal_posyandu', COUNT(*) FROM jadwal_posyandu
 UNION ALL SELECT 'kunjungan', COUNT(*) FROM kunjungan;
 
 ---PENGUJIAN QUERY SEBELUM INDEX---
+EXPLAIN
+SELECT b.nama, j.tanggal, k.berat_badan, k.status_gizi
+FROM kunjungan k
+JOIN balita b          ON b.id_balita = k.id_balita
+JOIN jadwal_posyandu j ON j.id_jadwal = k.id_jadwal
+WHERE j.tanggal BETWEEN '2024-03-01' AND '2024-03-07'
+  AND k.status_gizi = 'Stunting';
+-- HASIL EKSEKUSI---
+EXPLAIN ANALYZE
+SELECT b.nama, j.tanggal, k.berat_badan, k.status_gizi
+FROM kunjungan k
+JOIN balita b          ON b.id_balita = k.id_balita
+JOIN jadwal_posyandu j ON j.id_jadwal = k.id_jadwal
+WHERE j.tanggal BETWEEN '2024-03-01' AND '2024-03-07'
+  AND k.status_gizi = 'Stunting';
 
+-- MEMBUAT INDEX---
+CREATE INDEX idx_jadwal_tanggal          ON jadwal_posyandu (tanggal);
+CREATE INDEX idx_kunjungan_jadwal_status ON kunjungan (id_jadwal, status_gizi);
 
----JOIN+AGREGASI---
+-- PENGUJIAN QUERY SESUDAH INDEX---
+EXPLAIN
+SELECT b.nama, j.tanggal, k.berat_badan, k.status_gizi
+FROM kunjungan k
+JOIN balita b          ON b.id_balita = k.id_balita
+JOIN jadwal_posyandu j ON j.id_jadwal = k.id_jadwal
+WHERE j.tanggal BETWEEN '2024-03-01' AND '2024-03-07'
+  AND k.status_gizi = 'Stunting';
+
+-- PERIKSA INDEX
+SHOW INDEX FROM jadwal_posyandu;
+SHOW INDEX FROM kunjungan;
+
+-- HASIL EKSEKUSI---
+EXPLAIN ANALYZE
+SELECT b.nama, j.tanggal, k.berat_badan, k.status_gizi
+FROM kunjungan k
+JOIN balita b          ON b.id_balita = k.id_balita
+JOIN jadwal_posyandu j ON j.id_jadwal = k.id_jadwal
+WHERE j.tanggal BETWEEN '2024-03-01' AND '2024-03-07'
+  AND k.status_gizi = 'Stunting';
 
 
 
