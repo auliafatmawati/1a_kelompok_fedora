@@ -1,9 +1,8 @@
-TAHAP 2 – Implementasi Basis Data
-  1. Membuat Database
+-- Membuat Database
 CREATE DATABASE praktikum_modul10;
 USE praktikum_modul10;
 
-  2. Membuat Tabel Balita
+-- Membuat Tabel Balita
 CREATE TABLE balita (
     id_balita      VARCHAR(10)   NOT NULL PRIMARY KEY,
     nik            CHAR(16)      UNIQUE,
@@ -14,7 +13,7 @@ CREATE TABLE balita (
     no_wa_ortu     VARCHAR(20)
 ) ENGINE=InnoDB;
 
-  3. Membuat Tabel Jadwal Posyandu
+-- Membuat Tabel Jadwal Posyandu
 CREATE TABLE jadwal_posyandu (
     id_jadwal       VARCHAR(10)  NOT NULL PRIMARY KEY,
     tanggal         DATE         NOT NULL,
@@ -22,7 +21,7 @@ CREATE TABLE jadwal_posyandu (
     jenis_kegiatan  VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
 
-  4. Membuat Tabel Kunjungan
+-- Membuat Tabel Kunjungan
 CREATE TABLE kunjungan (
     id_kunjungan    VARCHAR(10)  NOT NULL PRIMARY KEY,
     id_balita       VARCHAR(10)  NOT NULL,
@@ -47,13 +46,13 @@ CREATE TABLE kunjungan (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-  5. Memeriksa Relasi Tabel
+-- Memeriksa Relasi Tabel/Struktur Tabel
 SHOW TABLES;
 SHOW CREATE TABLE balita;
 SHOW CREATE TABLE jadwal_posyandu;
 SHOW CREATE TABLE kunjungan;
 
-  6. Mengisi Data Awal
+-- Mengisi Data Awal
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 VALUES
@@ -76,8 +75,9 @@ VALUES
     ('K03', 'B02', 'J01', 10.20, 78.5, 46.0, 'Ya',    'Tidak', 'Berisiko Stunting'),
     ('K04', 'B02', 'J02', 10.40, 79.0, 46.0, 'Tidak', 'Ya',    'Berisiko Stunting');
 
-Tahap 3 – Praktik Operasi Database (CRUD)
-  1. CREATE – Menambahkan Data
+---===Praktik Operasi Database CRUD===---
+
+-- CREATE – Menambahkan Data
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 VALUES
@@ -85,7 +85,7 @@ VALUES
 
 SELECT * FROM balita
 
-  2. READ – Membaca Data
+-- READ – Membaca Data
 SELECT
     id_balita,
     nama,
@@ -97,7 +97,7 @@ SELECT *
 FROM kunjungan
 WHERE berat_badan > 10;
 
-  3. UPDATE – Memperbarui Data
+-- UPDATE – Memperbarui Data
 UPDATE kunjungan
 SET tinggi_badan = 79.5
 WHERE id_kunjungan = 'K03';
@@ -106,14 +106,13 @@ SELECT *
 FROM kunjungan
 WHERE id_kunjungan = 'K03';
 
-  4. DELETE – Menghapus Data
-    1. Pengujian COMMIT
+-- DELETE – Menghapus Data
 DELETE FROM balita
 WHERE nik = '3519010101250004';
 
 SELECT * FROM balita;
 
-  5. Menguji Integritas Referensial
+-- Menguji Integritas Referensial
 INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan, lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
 VALUES
@@ -122,11 +121,10 @@ VALUES
 DELETE FROM balita
 WHERE id_balita = 'B01';
 
-Tahap 4 – Pengujian Transaksi Database
-  1. Pengujian COMMIT
+---===PENGUJIAN TRANSAKSI DATABASE===---
 
+-- Pengujian COMMIT
 START TRANSACTION;
-
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 VALUES
@@ -136,56 +134,42 @@ INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan, lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
 VALUES
     ('K05', 'B05', 'J03', 8.90, 68.5, 44.0, 'Tidak', 'Tidak', 'Gizi Baik');
-
 COMMIT;
-
+-- Periksa Hasil
 SELECT * FROM balita    WHERE id_balita = 'B05';
 SELECT * FROM kunjungan WHERE id_balita = 'B05';
 
-  2. Pengujian ROLLBACK
+-- Pengujian ROLLBACK
 START TRANSACTION;
-
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 VALUES
     ('B06', '3519010101250006', 'Farah Aulia', '2025-05-18', 'P', 'Dedi Kurniawan', '081234560011');
-
 INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan, lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
 VALUES
     ('K06', 'B06', 'J03', 9.10, 69.0, 44.5, 'Tidak', 'Tidak', 'Gizi Baik');
-
 ROLLBACK;
-
+-- Periksa Hasil
 SELECT * FROM balita    WHERE id_balita = 'B06';
 SELECT * FROM kunjungan WHERE id_kunjungan = 'K06';
 
-  3. (Tambahan) Atomicity saat salah satu operasi GAGAL
+-- Atomicity saat salah satu operasi GAGAL
 START TRANSACTION;
-
 INSERT INTO balita
     (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 VALUES
     ('B07', '3519010101250007', 'Gilang Ramadhan', '2025-03-03', 'L', 'Yusuf Maulana', '081234560013');
-
 INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan, lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
 VALUES
     ('K07', 'B07', 'J99', 9.50, 70.0, 45.0, 'Tidak', 'Tidak', 'Gizi Baik');   
-
 ROLLBACK;
-
+-- Periksa Hasil
 SELECT * FROM balita WHERE id_balita = 'B07'; 
 
-engine InnoDB (mendukung transaksi)
-SELECT table_name, engine
-FROM information_schema.tables
-WHERE table_schema = 'uts_posyandu';
-
-TAHAP 5 - ANALISIS PERFORMA DATABASE
-  GENERATE DATA BERJUTA-JUTA (data dummy)
-  
-  Tabel bantu angka 0 .. 999.999
+---=== ANALISIS PERFORMA DATABASE ===---
+-- Tabel bantu angka 0 .. 999.999
 DROP TABLE IF EXISTS angka;
 DROP TABLE IF EXISTS digit_bantu;
 CREATE TABLE digit_bantu (d TINYINT NOT NULL);
@@ -198,10 +182,10 @@ FROM digit_bantu a, digit_bantu b, digit_bantu c,
      digit_bantu e, digit_bantu f, digit_bantu g;
 DROP TABLE digit_bantu;
 
-SET foreign_key_checks = 0;   -- data dibangkitkan konsisten, jadi aman untuk mempercepat
+SET foreign_key_checks = 0;  
 SET unique_checks = 0;
 
-  0a. balita: 500.000 baris
+-- Balita: 500.000 baris
 INSERT INTO balita (id_balita, nik, nama, tgl_lahir, jenis_kelamin, nama_ortu, no_wa_ortu)
 SELECT CONCAT('BL', LPAD(n, 6, '0')),
        CONCAT('35190', LPAD(n, 11, '0')),
@@ -213,7 +197,7 @@ SELECT CONCAT('BL', LPAD(n, 6, '0')),
 FROM angka
 WHERE n BETWEEN 1 AND 500000;
 
- 0b. jadwal_posyandu: 1.000 baris (harian sejak 2023-01-02)
+ -- jadwal_posyandu: 1.000 baris (harian sejak 2023-01-02)
 INSERT INTO jadwal_posyandu (id_jadwal, tanggal, jam_mulai, jenis_kegiatan)
 SELECT CONCAT('JD', LPAD(n, 4, '0')),
        DATE_ADD('2023-01-01', INTERVAL n DAY),
@@ -221,8 +205,9 @@ SELECT CONCAT('JD', LPAD(n, 4, '0')),
        'Posyandu rutin, penimbangan'
 FROM angka
 WHERE n BETWEEN 1 AND 1000;
+SET unique_checks = 1;
 
- 0c. kunjungan: 2.000.000 baris (setiap balita 4 jadwal berbeda)
+-- Kunjungan: 2.000.000 baris (setiap balita 4 jadwal berbeda)
 INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan,
      lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
@@ -242,3 +227,23 @@ WHERE a.n BETWEEN 1 AND 500000;
 SET unique_checks = 1;
 SET foreign_key_checks = 1;
 DROP TABLE angka;
+
+---PERBARUI STATISTIK TABEL---
+ANALYZE TABLE balita, jadwal_posyandu, kunjungan;
+
+---CEK JUMLAH DATA---
+SELECT 'balita' AS tabel, COUNT(*) AS jumlah FROM balita
+UNION ALL SELECT 'jadwal_posyandu', COUNT(*) FROM jadwal_posyandu
+UNION ALL SELECT 'kunjungan', COUNT(*) FROM kunjungan;
+
+---PENGUJIAN QUERY SEBELUM INDEX---
+
+
+---JOIN+AGREGASI---
+
+
+
+
+
+
+
