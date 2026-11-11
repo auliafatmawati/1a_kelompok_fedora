@@ -116,7 +116,7 @@ SELECT * FROM balita;
 INSERT INTO kunjungan
     (id_kunjungan, id_balita, id_jadwal, berat_badan, tinggi_badan, lingkar_kepala, vitamin_a, obat_cacing, status_gizi)
 VALUES
-    ('K99', 'B99', 'J03', 9.00, 70.0, 45.0, 'Tidak', 'Tidak', 'Gizi Baik');
+    ('K01', 'B01', 'J03', 9.00, 70.0, 45.0, 'Tidak', 'Tidak', 'Gizi Baik');
 
 DELETE FROM balita
 WHERE id_balita = 'B01';
